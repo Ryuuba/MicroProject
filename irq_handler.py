@@ -16,13 +16,16 @@ class IRQHandler:
         """ IRQ executed when the push button is pressed
 
         Args:
-            pin (Pin): The IRQ requieres a pin to performed some action with it (not needed in all cases)
+            pin (Pin): The IRQ requieres a pin to perform some action with it (not needed in all cases)
         """
         # move to debounce button
         self.__fsm.compute_next_state(self.__event['press button'])
 
-    def timeout(self) -> None:
+    def timeout(self, t : Timer) -> None:
         """IRQ executed when a timer rings
+
+        Args:
+            t (Timer): The IRQ requieres a timer to perform some action with it (not needed in all cases)
         """
         # move to debounce button
         self.__fsm.compute_next_state(self.__event['timeout'])
