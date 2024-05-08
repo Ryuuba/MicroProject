@@ -7,10 +7,12 @@ class PicoFSM:
     """
     def __init__(self, initial_state: int = 0) -> None:
         """ Initializes the finite state machine
+
+        Args:
+            initial_state (int): the code of the initial state (default = 0)
         """
         self.__current_state = initial_state
-        self.__transitions = {}
-        self.__irq_handlers = []
+        self.__transitions : dict[tuple[int, str], int] = {}
 
     def get_current_state(self) -> int:
         """ Returns the current state of the FSM
@@ -42,16 +44,11 @@ class PicoFSM:
         """
         return self.__transitions[(current_state, event)]
     
-    def compute_next_state(self, current_state: int, event: str) -> None:
+    def compute_next_state(self, event: str) -> None:
         """ Updates the code of the current state according to the code of the next state
 
         Args:
-            current_state (int): the code of the current state
             event (str): the kind of interrupt producing the change of state
 
-        Returns:
-            int: The code of the next state
         """
-        self.__current_state = self.__transitions[(current_state, event)]
-    
-    
+        self.__current_state = self.__transitions[(self.__current_state, event)]
