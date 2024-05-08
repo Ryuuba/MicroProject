@@ -5,6 +5,11 @@ from utime import sleep_ms
 from machine import Pin
 
 def debounce_button(pin: Pin) -> None:
+    """Filters by software the noise a push_button generates
+
+    Args:
+        pin (Pin): The pin where the push button is connected
+    """
     cur_value = pin.value()
     active = 0
     while active < 20:
@@ -13,3 +18,4 @@ def debounce_button(pin: Pin) -> None:
         else:
             active = 0
         sleep_ms(1)
+
