@@ -2,15 +2,75 @@ from machine import Pin, I2C
 from ssd1306 import SSD1306_I2C
 from utime import sleep
 from digital_clock import DigitalClock
+from fsm import FSM
+from irq_handler import IRQHandler
+import fsm_actions
+from machine import disable_irq, enable_irq
+
+def init_fsm(fsm: FSM, event: dict[str, int]) -> None:
+    """Set the transition rules of the FSM to be implemented
+
+    Args:
+        fsm (FSM): A non-initialized finite state machine 
+    """
+    fsm.set_transition_rule(0, event['unconditional'], 1)
+    fsm.set_transition_rule(1, event['none'], 1)
+    fsm.set_transition_rule(1, event['press button'], 2)
+    fsm.set_transition_rule(1, event['timeout'], 3)
+    fsm.set_transition_rule(2, event['button'], 4)
+    fsm.set_transition_rule(2, event['not button'], 1)
+    fsm.set_transition_rule(3, event['unconditional'], 5)
+    fsm.set_transition_rule(4, event['unconditional'], 5)
+    fsm.set_transition_rule(5, event['unconditional'], 1)
 
 def main() -> None:
-    # init
+    # init state
+    fsm = FSM()
+    event = {
+        'unconditional' : 0, 
+        'none' : 1, 
+        'press button' : 2, 
+        'timeout' : 3, 
+        'button' : 4, 
+        'not button' : 5}
+    init_fsm(fsm, event)
+    irq = IRQHandler(fsm, event)
     clock = DigitalClock(23,59,50)
     led = Pin("LED", Pin.OUT)
     button = Pin(15, Pin.IN, Pin.PULL_UP)
-    button.irq(trigger=Pin.IRQ_RISING, handler=button_isr)
-    i2c = I2C(0, sda=Pin(16), scl=Pin(17), freq=400000)
+    button.irq(trigger=Pin.IRQ_RISING, handler=irq.press_button)
+    i2c = I2C(0, sda=Pin(16), scl=Pin(17), freq=100000)
     oled = SSD1306_I2C(128,64,i2c)
+    # unconditionally, passes the the next state 'cause init is done
+    fsm.compute_next_state(event['unconditional'])
+    while True:
+        state = fsm.get_current_state()
+        if state == 1:
+            enable_irq(irq_state)
+            fsm_actions.keep_alive(led, irq_state)
+            fsm.compute_next_state(event['default'])
+            # Other changes of state are set by the interrupt handler
+        elif state == 2:
+            irq_state = disable_irq()
+            button_val = fsm_actions.debounce_button(button)
+            if button_val == 0:
+                fsm.compute_next_state(event['not button'])
+            else:
+                fsm.compute_next_state(event['button'])
+        elif state == 3:
+            irq_state = disable_irq()
+            fsm_actions.update_clock(clock)
+            fsm.compute_next_state(event['unconditional'])
+        elif state == 4:
+            irq_state = disable_irq()
+            fsm_actions.clear_clock(clock)
+            fsm.compute_next_state(event['unconditional'])
+        elif state == 5:
+            irq_state = disable_irq()
+            fsm_actions.display_clock(clock, oled)
+        else:
+            fsm_actions.unknown_state()
+            
 
 if __name__ == '__main__':
     main()
