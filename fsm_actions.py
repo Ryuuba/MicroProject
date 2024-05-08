@@ -3,7 +3,6 @@
 
 from utime import sleep_ms, sleep
 from machine import Pin
-from typing import Any
 from digital_clock import DigitalClock
 from ssd1306 import SSD1306_I2C
 from machine import disable_irq, enable_irq
@@ -26,15 +25,15 @@ def debounce_button(pin: Pin, delay: int = 20) -> int:
         sleep_ms(1)
     return current_value
 
-def keep_alive(led_pin: Pin, irq_state) -> None:
+def keep_alive(led_pin: Pin) -> None:
     """blinks a led to signal the board is working
 
     Args:
         led_pin (Pin): An initialized pin that has attach a led
     """
-    print('Waitin\' for an event')
     led_pin.toggle()
     sleep(1)
+    print('Waitin\' for an event')
 
 
 def update_clock(clock: DigitalClock) -> None:

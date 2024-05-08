@@ -47,4 +47,5 @@ class FSM:
             event (str): the kind of interrupt producing the change of state
 
         """
+        print(self.__current_state, event_number)
         self.__current_state = self.__transitions[(self.__current_state, event_number)]
