@@ -8,7 +8,7 @@ from digital_clock import DigitalClock
 from ssd1306 import SSD1306_I2C
 from machine import disable_irq, enable_irq
 
-def debounce_button(pin: Pin, delay: int = 20) -> int
+def debounce_button(pin: Pin, delay: int = 20) -> int:
     """Filters by software the noise a push_button generates
 
     Args:
@@ -41,10 +41,14 @@ def update_clock(clock: DigitalClock) -> None:
     clock.increment()
 
 def clear_clock(clock: DigitalClock) -> None:
-    pass
+    clock.clear_time()
 
 def display_clock(clock: DigitalClock, oled: SSD1306_I2C) -> None:
-    pass
+    oled.fill(0)
+    h, m, s = clock.get_time()
+    time = f'{h:02}:{m:02}:{s:02}'
+    oled.text(time, 10,0)
+    oled.show()
 
 def unknown_state():
-    pass
+    print('FALTA ERROR')
