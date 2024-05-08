@@ -27,5 +27,8 @@ class DigitalClock:
             tuple[int, int, int]: hours, minutes, seconds
         """
         return (self._h, self._m, self._s)
+    
+    def clear_time(self) -> None:
+        self._h, self._m, self._s = 0, 0, 0
 
     
