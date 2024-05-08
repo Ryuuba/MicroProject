@@ -1,8 +1,4 @@
-EventList = [
-
-]
-
-class PicoFSM:
+class FSM:
     """This class implements a deterministic finite state machine working with Raspberry Pico W interrupts as events
     """
     def __init__(self, initial_state: int = 0) -> None:
