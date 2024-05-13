@@ -6,23 +6,8 @@ from fsm import FSM
 from irq_handler import IRQHandler
 import fsm_actions
 from machine import disable_irq, enable_irq
-from test import test_fsm_with_oled
-
-def init_fsm(fsm: FSM, event: dict[str, int]) -> None:
-    """Set the transition rules of the FSM to be implemented
-
-    Args:
-        fsm (FSM): A non-initialized finite state machine 
-    """
-    fsm.set_transition_rule(0, event['unconditional'], 1)
-    fsm.set_transition_rule(1, event['default'], 1)
-    fsm.set_transition_rule(1, event['press button'], 2)
-    fsm.set_transition_rule(1, event['timeout'], 3)
-    fsm.set_transition_rule(2, event['button'], 4)
-    fsm.set_transition_rule(2, event['not button'], 1)
-    fsm.set_transition_rule(3, event['unconditional'], 5)
-    fsm.set_transition_rule(4, event['unconditional'], 5)
-    fsm.set_transition_rule(5, event['unconditional'], 1)
+from fsm_init import init_fsm
+from test import test_fsm_with_button
 
 def main() -> None:
     # init state
@@ -90,6 +75,6 @@ def main() -> None:
 if __name__ == '__main__':
     debug = True
     if debug:
-        test_fsm_with_oled()
+        test_fsm_with_button()
     else:
         main()
