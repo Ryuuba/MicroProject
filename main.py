@@ -6,7 +6,7 @@ from fsm import FSM
 from irq_handler import IRQHandler
 import fsm_actions
 from machine import disable_irq, enable_irq
-from test import test_fsm
+from test import test_fsm_with_oled
 
 def init_fsm(fsm: FSM, event: dict[str, int]) -> None:
     """Set the transition rules of the FSM to be implemented
@@ -90,6 +90,6 @@ def main() -> None:
 if __name__ == '__main__':
     debug = True
     if debug:
-        test_fsm()
+        test_fsm_with_oled()
     else:
         main()
