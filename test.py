@@ -8,6 +8,7 @@ from utime import sleep
 from machine import I2C, Pin
 from ssd1306 import SSD1306_I2C
 from irq_handler import IRQHandler
+from fsm_actions import debounce_button
 
 def test_fsm()->None:
     """This module evaluates the correct operation of FSM objects
@@ -120,25 +121,33 @@ def test_fsm_with_button() -> None:
         state = fsm.get_current_state()
         if state == 1:
             oled.text(f'current state {state} = S1', 10, 0)
+            oled.show()
             fsm.compute_next_state(event['default'])
         elif state == 2:
             oled.text(f'current state {state} = S2', 10, 0)
-            if randint(0, 1) == 0:
-                fsm.compute_next_state(event['not button'])
-            else:
+            oled.show()
+            button_val = debounce_button(button)
+            if button_val == 0:
                 fsm.compute_next_state(event['button'])
+            else:
+                fsm.compute_next_state(event['not button'])
+            sleep(1)
         elif state == 3:
             oled.text(f'current state {state} = S3', 10, 0)
+            oled.show()
             fsm.compute_next_state(event['unconditional'])
+            sleep(1)
         elif state == 4:
             oled.text(f'current state {state} = S4', 10, 0)
+            oled.show()
             fsm.compute_next_state(event['unconditional'])
+            sleep(1)
         elif state == 5:
             oled.text(f'current state {state} = S5', 10, 0)
+            oled.show()
             fsm.compute_next_state(event['unconditional'])
+            sleep(1)
         else:
             print(f'current state {state}')
             break
-        oled.show()
-        sleep(5)
         oled.fill(0)
