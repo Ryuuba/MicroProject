@@ -9,6 +9,7 @@ from machine import disable_irq, enable_irq
 from fsm_init import init_fsm
 from test import test_fsm_with_button
 
+
 def main() -> None:
     # init state
     fsm = FSM()
@@ -49,9 +50,9 @@ def main() -> None:
             irq_state = disable_irq()
             button_val = fsm_actions.debounce_button(button)
             if button_val == 0:
-                fsm.compute_next_state(event['not button'])
-            else:
                 fsm.compute_next_state(event['button'])
+            else:
+                fsm.compute_next_state(event['not button'])
         elif state == 3:
             print(f'current state {state}')
             irq_state = disable_irq()
