@@ -1,6 +1,5 @@
 from test import test_fsm_with_timer
 
-
 def main() -> None:
     pass
 
