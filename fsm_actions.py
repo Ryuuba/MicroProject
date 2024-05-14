@@ -15,15 +15,15 @@ def debounce_button(pin: Pin, delay: int = 20) -> int:
     Source:
         https://docs.micropython.org/en/latest/pyboard/tutorial/debounce.html
     """
-    current_value = pin.value()
+    cur_value = pin.value()
     active = 0
     while active < delay:
-        if pin.value() != current_value:
+        if pin.value() != cur_value:
             active += 1
         else:
             active = 0
         sleep_ms(1)
-    return current_value
+    return cur_value
 
 def keep_alive(led_pin: Pin) -> None:
     """blinks a led to signal the board is working
