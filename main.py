@@ -1,4 +1,4 @@
-from test import test_fsm_with_timer
+from test import test_fsm_interrupt
 
 def main() -> None:
     pass
@@ -6,6 +6,6 @@ def main() -> None:
 if __name__ == '__main__':
     debug = True
     if debug:
-        test_fsm_with_timer()
+        test_fsm_interrupt()
     else:
         main()
