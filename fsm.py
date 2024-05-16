@@ -47,4 +47,8 @@ class FSM:
             event (str): the kind of interrupt producing the change of state
 
         """
-        self.__current_state = self.__transitions[(self.__current_state, event_number)]
+        try:
+            self.__current_state = self.__transitions[(self.__current_state, event_number)]
+        except KeyError:
+            self.__current_state = -1
+            print('Damn it!')

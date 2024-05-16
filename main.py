@@ -1,11 +1,14 @@
-from test import test_fsm_interrupt
+from test import test_fsm_interrupt, test_oled
+from machine import Pin
+from utime import sleep
 
 def main() -> None:
-    pass
+    test_oled()
+    sleep(10)
 
 if __name__ == '__main__':
-    debug = True
-    if debug:
+    interrupt_pin = Pin('GP1', Pin.IN, Pin.PULL_UP)
+    if interrupt_pin.value() == 1:
         test_fsm_interrupt()
     else:
         main()
