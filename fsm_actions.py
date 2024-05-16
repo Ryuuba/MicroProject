@@ -6,6 +6,7 @@ from machine import Pin
 from digital_clock import DigitalClock
 from ssd1306 import SSD1306_I2C
 from machine import disable_irq, enable_irq
+from fsm import FSM
 
 def debounce_button(pin: Pin, delay: int = 20) -> int:
     """Filters by software the noise a push_button generates
@@ -51,3 +52,19 @@ def display_clock(clock: DigitalClock, oled: SSD1306_I2C) -> None:
 
 def unknown_state():
     print('FALTA ERROR')
+
+def init_fsm(fsm: FSM, event: dict[str, int]) -> None:
+    """Set the transition rules of the FSM to be implemented
+
+    Args:
+        fsm (FSM): A non-initialized finite state machine 
+    """
+    fsm.set_transition_rule(0, event['unconditional'], 1)
+    fsm.set_transition_rule(1, event['default'], 1)
+    fsm.set_transition_rule(1, event['press button'], 2)
+    fsm.set_transition_rule(1, event['timeout'], 5)
+    fsm.set_transition_rule(2, event['button'], 3)
+    fsm.set_transition_rule(2, event['not button'], 1)
+    fsm.set_transition_rule(3, event['unconditional'], 4)
+    fsm.set_transition_rule(4, event['unconditional'], 1)
+    fsm.set_transition_rule(5, event['unconditional'], 4)
