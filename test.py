@@ -10,21 +10,22 @@ from fsm_actions import init_fsm, read_button
 import shared_obj
 from dht import DHT11
 import ahtx0
-try:
-    import network
-    import socket
-except ImportError:
-    print('Running from a Rb Pico')
-else:
-    print('Running from a Rb Pico W')
+from pico_slave import i2c_slave
+
+def time_slave() -> None:
+    s_i2c = i2c_slave(0,sda=16,scl=17,slaveAddress=0x41)
+    try:
+        while True:
+            print(s_i2c.get())
+    except KeyboardInterrupt:
+        pass
 
 def get_time_from_server() -> None:
+    import socket
     host = "172.30.5.91"  # Replace with the server's IP address
     port = 12345
-
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client_socket.connect((host, port))
-
     try:
         server_time = client_socket.recv(1024).decode()
         print(f"{server_time}")
@@ -34,6 +35,7 @@ def get_time_from_server() -> None:
         client_socket.close()
 
 def test_wifi() -> None:
+    import network
     ssid = 'labred'
     password = 'labred2017'
     wlan = network.WLAN(network.STA_IF)
@@ -112,6 +114,8 @@ def test_fsm_interrupt() -> None:
         elif state == 2:
             # get time from server
             irq_state = disable_irq()
+            i2c.writeto(0x41, b'GET')
+            # i2c.readfrom(0x41, 20) 
             shared_obj.digital_clock.clear_time()
             enable_irq(irq_state)
             shared_obj.fsm.compute_next_state(shared_obj.ev['unconditional'])
