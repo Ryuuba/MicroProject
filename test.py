@@ -16,7 +16,9 @@ def time_slave() -> None:
     s_i2c = i2c_slave(0,sda=16,scl=17,slaveAddress=0x41)
     try:
         while True:
-            print(s_i2c.get())
+            c = s_i2c.get()
+            s_i2c.put(c)
+            print(c)
     except KeyboardInterrupt:
         pass
 
@@ -114,8 +116,9 @@ def test_fsm_interrupt() -> None:
         elif state == 2:
             # get time from server
             irq_state = disable_irq()
-            i2c.writeto(0x41, b'GET')
-            # i2c.readfrom(0x41, 20) 
+            i2c.writeto(0x41, b'G')
+            c = i2c.readfrom(0x41, 1)
+            oled.text(c, 0, 40)
             shared_obj.digital_clock.clear_time()
             enable_irq(irq_state)
             shared_obj.fsm.compute_next_state(shared_obj.ev['unconditional'])
