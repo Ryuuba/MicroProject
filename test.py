@@ -10,6 +10,37 @@ from fsm_actions import init_fsm, read_button
 import shared_obj
 from dht import DHT11
 import ahtx0
+import network
+import socket
+
+def get_time_from_server():
+    host = "192.168.1.84"  # Replace with the server's IP address
+    port = 12345
+
+    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    client_socket.connect((host, port))
+
+    try:
+        server_time = client_socket.recv(1024).decode()
+        print(f"{server_time}")
+    except Exception as e:
+        print(f"Error receiving data: {e}")
+    finally:
+        client_socket.close()
+
+def test_wifi() -> None:
+    ssid = 'labred'
+    password = 'labred2017'
+    wlan = network.WLAN(network.STA_IF)
+    wlan.active(True)
+    wlan.connect(ssid, password)
+    while not wlan.isconnected():
+        print('Waiting for connection...')
+        sleep(1)
+    print('Connected to WiFi!')
+    print('IP address:', wlan.ifconfig()[0])
+    get_time_from_server()
+    
 
 def test_oled() -> None:
     i2c = I2C(0, sda=Pin(16), scl=Pin(17), freq=400000)
