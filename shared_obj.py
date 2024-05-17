@@ -13,6 +13,10 @@ clear_display = False
 
 debounce_button = False
 
+temp_counter = 0
+
+read_aht10 = False
+
 fsm: FSM = FSM()
 
 digital_clock: DigitalClock = DigitalClock()

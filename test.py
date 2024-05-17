@@ -5,7 +5,7 @@ from fsm import FSM
 from utime import sleep, sleep_ms
 from machine import I2C, Pin, Timer, enable_irq, disable_irq
 from ssd1306 import SSD1306_I2C
-from irq_handler import press_button, timeout
+from irq_handler import press_button, timeout, get_temp
 from fsm_actions import init_fsm, read_button
 import shared_obj
 from dht import DHT11
@@ -41,19 +41,30 @@ def test_fsm_interrupt() -> None:
     oled = SSD1306_I2C(128,64,i2c)
     button = Pin(15, Pin.IN, Pin.PULL_UP)
     button.irq(trigger=Pin.IRQ_FALLING, handler=press_button, hard=True)
-    t = Timer() # create a timer object using timer 1
-    t.init(mode=Timer.PERIODIC, period=1000, callback=timeout)
+    t_clock = Timer() # create a timer object using timer 1
+    t_clock.init(mode=Timer.PERIODIC, period=1000, callback=timeout)
+    t_temp = Timer() # create a timer object using timer 1
+    t_temp.init(mode=Timer.PERIODIC, period=1000, callback=get_temp)
+    sensor = ahtx0.AHT10(i2c)
     init_fsm(shared_obj.fsm, shared_obj.ev)
     print(shared_obj.fsm.get_current_state())
     shared_obj.fsm.compute_next_state(shared_obj.ev['unconditional'])
     print('init OK')
+    temp = f'Temp: {sensor.temperature:0.2f}.C'
+    hum = f'Hum: {sensor.relative_humidity:0.2f}%'
     while True:
         state = shared_obj.fsm.get_current_state()
         if state == 1:
             h, m, s = shared_obj.digital_clock.get_time()
             time = f'{h:02}:{m:02}:{s:02}'
             oled.text(time, 0, 0)
+            oled.text(temp, 0, 10)
+            oled.text(hum, 0, 20)
             oled.show()
+            if shared_obj.read_aht10:
+                temp = f'Temp: {sensor.temperature:0.2f}.C'
+                hum = f'Hum: {sensor.relative_humidity:0.2f}%'
+                shared_obj.read_aht10 = False
             if shared_obj.clear_display:
                 oled.fill(0)
                 shared_obj.clear_display = False
