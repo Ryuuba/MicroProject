@@ -1,4 +1,5 @@
 """This module holds test that evaluate the operation of this project
+https://forums.raspberrypi.com/viewtopic.php?t=302978
 """
 
 from fsm import FSM
@@ -117,8 +118,10 @@ def test_fsm_interrupt() -> None:
             # get time from server
             irq_state = disable_irq()
             i2c.writeto(0x41, b'G')
-            c = i2c.readfrom(0x41, 1)
-            oled.text(c, 0, 40)
+            print('Test i2c')
+            c = i2c.readfrom(0x41, 1, False)
+            print(c)
+            # oled.text(c, 0, 40)
             shared_obj.digital_clock.clear_time()
             enable_irq(irq_state)
             shared_obj.fsm.compute_next_state(shared_obj.ev['unconditional'])
