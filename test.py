@@ -10,11 +10,16 @@ from fsm_actions import init_fsm, read_button
 import shared_obj
 from dht import DHT11
 import ahtx0
-import network
-import socket
+try:
+    import network
+    import socket
+except ImportError:
+    print('Running from a Rb Pico')
+else:
+    print('Running from a Rb Pico W')
 
-def get_time_from_server():
-    host = "192.168.1.84"  # Replace with the server's IP address
+def get_time_from_server() -> None:
+    host = "172.30.5.91"  # Replace with the server's IP address
     port = 12345
 
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -77,12 +82,12 @@ def test_fsm_interrupt() -> None:
     t_temp = Timer() # create a timer object using timer 1
     t_temp.init(mode=Timer.PERIODIC, period=1000, callback=get_temp)
     sensor = ahtx0.AHT10(i2c)
+    temp = f'Temp: {sensor.temperature:0.2f}.C'
+    hum = f'Hum: {sensor.relative_humidity:0.2f}%'
     init_fsm(shared_obj.fsm, shared_obj.ev)
     print(shared_obj.fsm.get_current_state())
     shared_obj.fsm.compute_next_state(shared_obj.ev['unconditional'])
     print('init OK')
-    temp = f'Temp: {sensor.temperature:0.2f}.C'
-    hum = f'Hum: {sensor.relative_humidity:0.2f}%'
     while True:
         state = shared_obj.fsm.get_current_state()
         if state == 1:
