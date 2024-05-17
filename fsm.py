@@ -50,5 +50,5 @@ class FSM:
         try:
             self.__current_state = self.__transitions[(self.__current_state, event_number)]
         except KeyError:
+            print(f'Damn it! [{self.__current_state}, {event_number}]')
             self.__current_state = -1
-            print('Damn it!')
