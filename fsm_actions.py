@@ -8,7 +8,7 @@ from ssd1306 import SSD1306_I2C
 from machine import disable_irq, enable_irq
 from fsm import FSM
 
-def debounce_button(pin: Pin, delay: int = 20) -> int:
+def read_button(pin: Pin, delay: int = 20) -> int:
     """Filters by software the noise a push_button generates
 
     Args:
@@ -62,9 +62,4 @@ def init_fsm(fsm: FSM, event: dict[str, int]) -> None:
     fsm.set_transition_rule(0, event['unconditional'], 1)
     fsm.set_transition_rule(1, event['default'], 1)
     fsm.set_transition_rule(1, event['press button'], 2)
-    fsm.set_transition_rule(1, event['timeout'], 5)
-    fsm.set_transition_rule(2, event['button'], 3)
-    fsm.set_transition_rule(2, event['not button'], 1)
-    fsm.set_transition_rule(3, event['unconditional'], 4)
-    fsm.set_transition_rule(4, event['unconditional'], 1)
-    fsm.set_transition_rule(5, event['unconditional'], 4)
+    fsm.set_transition_rule(2, event['unconditional'], 1)
