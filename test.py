@@ -45,7 +45,6 @@ def test_wifi() -> None:
     print('Connected to WiFi!')
     print('IP address:', wlan.ifconfig()[0])
     get_time_from_server()
-    
 
 def test_oled() -> None:
     i2c = I2C(0, sda=Pin(16), scl=Pin(17), freq=400000)
@@ -93,9 +92,11 @@ def test_fsm_interrupt() -> None:
         if state == 1:
             h, m, s = shared_obj.digital_clock.get_time()
             time = f'{h:02}:{m:02}:{s:02}'
+            date = f'2024-05-17'
             oled.text(time, 0, 0)
-            oled.text(temp, 0, 10)
-            oled.text(hum, 0, 20)
+            oled.text(date, 0, 10)
+            oled.text(temp, 0, 20)
+            oled.text(hum, 0, 30)
             oled.show()
             if shared_obj.read_aht10:
                 temp = f'Temp: {sensor.temperature:0.2f}.C'
