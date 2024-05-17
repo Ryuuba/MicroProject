@@ -9,6 +9,10 @@ ev = {
     'not button' : 4,
     'timeout' : 5}
 
-fsm = FSM()
+clear_display = False
 
-digital_clock = DigitalClock()
+debounce_button = False
+
+fsm: FSM = FSM()
+
+digital_clock: DigitalClock = DigitalClock()
