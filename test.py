@@ -15,11 +15,12 @@ from pico_slave import i2c_slave
 
 def time_slave() -> None:
     s_i2c = i2c_slave(0,sda=16,scl=17,slaveAddress=0x41)
+    test_wifi()
     try:
         while True:
+            dt = get_time_from_server()
             c = s_i2c.get()
-            s_i2c.put(c)
-            print(c)
+            print(c, dt)
     except KeyboardInterrupt:
         pass
 
@@ -31,7 +32,6 @@ def get_time_from_server() -> None:
     client_socket.connect((host, port))
     try:
         server_time = client_socket.recv(1024).decode()
-        print(f"{server_time}")
     except Exception as e:
         print(f"Error receiving data: {e}")
     finally:
@@ -49,7 +49,6 @@ def test_wifi() -> None:
         sleep(1)
     print('Connected to WiFi!')
     print('IP address:', wlan.ifconfig()[0])
-    get_time_from_server()
 
 def test_oled() -> None:
     i2c = I2C(0, sda=Pin(16), scl=Pin(17), freq=400000)
@@ -91,6 +90,7 @@ def test_fsm_interrupt() -> None:
     init_fsm(shared_obj.fsm, shared_obj.ev)
     print(shared_obj.fsm.get_current_state())
     shared_obj.fsm.compute_next_state(shared_obj.ev['unconditional'])
+    print(i2c.scan())
     print('init OK')
     while True:
         state = shared_obj.fsm.get_current_state()
@@ -117,10 +117,8 @@ def test_fsm_interrupt() -> None:
         elif state == 2:
             # get time from server
             irq_state = disable_irq()
-            i2c.writeto(0x41, b'G')
+            i2c.writeto(0x41, b'GET')
             print('Test i2c')
-            c = i2c.readfrom(0x41, 1, False)
-            print(c)
             # oled.text(c, 0, 40)
             shared_obj.digital_clock.clear_time()
             enable_irq(irq_state)
