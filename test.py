@@ -8,6 +8,7 @@ from ssd1306 import SSD1306_I2C
 from irq_handler import press_button, timeout
 from fsm_actions import init_fsm, read_button
 import shared_obj
+from dht import DHT11
 
 def test_oled() -> None:
     i2c = I2C(0, sda=Pin(16), scl=Pin(17), freq=400000)
@@ -15,6 +16,15 @@ def test_oled() -> None:
     oled.text(f'You\'are safe here!!!', 0, 10)
     oled.show()
 
+def test_dht11() -> None:
+    dht_sensor = DHT11(Pin(18))
+    while True:
+        dht_sensor.measure()
+        temp = dht_sensor.temperature()
+        hum = dht_sensor.humidity()
+        print(f'temp: {temp}, humidity: {hum}')
+        sleep(5)
+    
 
 def test_fsm_interrupt() -> None:
     """This module evaluates the correct operation of FSM objects
