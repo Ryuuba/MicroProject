@@ -9,6 +9,7 @@ from irq_handler import press_button, timeout
 from fsm_actions import init_fsm, read_button
 import shared_obj
 from dht import DHT11
+import ahtx0
 
 def test_oled() -> None:
     i2c = I2C(0, sda=Pin(16), scl=Pin(17), freq=400000)
@@ -24,7 +25,14 @@ def test_dht11() -> None:
         hum = dht_sensor.humidity()
         print(f'temp: {temp}, humidity: {hum}')
         sleep(5)
-    
+
+def test_AHT10() -> None:
+    i2c = I2C(0, sda=Pin(16), scl=Pin(17), freq=400000)
+    sensor = ahtx0.AHT10(i2c)
+    while True:
+        print("\nTemperature: %0.2f C" % sensor.temperature)
+        print("Humidity: %0.2f %%" % sensor.relative_humidity)
+        sleep(5)
 
 def test_fsm_interrupt() -> None:
     """This module evaluates the correct operation of FSM objects
