@@ -26,33 +26,6 @@ def read_button(pin: Pin, delay: int = 20) -> int:
         sleep_ms(1)
     return cur_value
 
-def keep_alive(led_pin: Pin) -> None:
-    """blinks a led to signal the board is working
-
-    Args:
-        led_pin (Pin): An initialized pin that has attach a led
-    """
-    led_pin.toggle()
-    sleep(1)
-    print('Waitin\' for an event')
-
-
-def update_clock(clock: DigitalClock) -> None:
-    clock.increment()
-
-def clear_clock(clock: DigitalClock) -> None:
-    clock.clear_time()
-
-def display_clock(clock: DigitalClock, oled: SSD1306_I2C) -> None:
-    oled.fill(0)
-    h, m, s = clock.get_time()
-    time = f'{h:02}:{m:02}:{s:02}'
-    oled.text(time, 10,0)
-    oled.show()
-
-def unknown_state():
-    print('FALTA ERROR')
-
 def init_fsm(fsm: FSM, event: dict[str, int]) -> None:
     """Set the transition rules of the FSM to be implemented
 

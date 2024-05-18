@@ -2,6 +2,7 @@ from test import test_fsm_interrupt, time_slave
 from machine import Pin
 from utime import sleep
 
+
 def main() -> None:
     print('Maybe you want to test to code')
 

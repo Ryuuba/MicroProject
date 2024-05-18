@@ -5,20 +5,20 @@ class DigitalClock:
         """Default constructor that asserts input values are in the correct range.
         """
         assert h >= 0 and h < 24
-        self._h = h
+        self.__h = h
         assert m >= 0 and m < 60
-        self._m = m
+        self.__m = m
         assert s >= 0 and s < 60
-        self._s = s
+        self.__s = s
 
     def increment(self) -> None:
         """ Updates one second the current time
         """
-        self._h = self._h + 1 if self._m == 59 and self._s == 59 else self._h
-        self._h = 0 if self._h == 24 else self._h
-        self._m = self._m + 1 if self._s == 59 else self._m
-        self._m = 0 if self._m == 60 else self._m
-        self._s = self._s + 1 if self._s < 59 else 0
+        self.__h = self.__h + 1 if self.__m == 59 and self.__s == 59 else self.__h
+        self.__h = 0 if self.__h == 24 else self.__h
+        self.__m = self.__m + 1 if self.__s == 59 else self.__m
+        self.__m = 0 if self.__m == 60 else self.__m
+        self.__s = self.__s + 1 if self.__s < 59 else 0
 
     def get_time(self) -> tuple[int, int, int]:
         """Returns the current time
@@ -26,9 +26,20 @@ class DigitalClock:
         Returns:
             tuple[int, int, int]: hours, minutes, seconds
         """
-        return (self._h, self._m, self._s)
+        return (self.__h, self.__m, self.__s)
     
     def clear_time(self) -> None:
-        self._h, self._m, self._s = 0, 0, 0
+        """Resets time
+        """
+        self.__h, self.__m, self.__s = 0, 0, 0
 
-    
+    def set_time(self, h: int, m: int, s: int) -> None:
+        """Sets time
+
+        Args:
+            h (int): hours in 24 H format
+            m (int): minutes
+            s (int): seconds
+        """
+        assert h >= 0 and h < 24 and m >= 0 and m < 60 and s >= 0 and s < 60
+        self.__h, self.__m, self.__s = h, m, s

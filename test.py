@@ -11,31 +11,35 @@ from fsm_actions import init_fsm, read_button
 import shared_obj
 from dht import DHT11
 import ahtx0
-from pico_slave import i2c_slave
+from machine import UART
 
 def time_slave() -> None:
-    s_i2c = i2c_slave(0,sda=16,scl=17,slaveAddress=0x41)
+    uart = UART(0, baudrate=9600, tx=Pin(12), rx=Pin(13))
     test_wifi()
     try:
         while True:
-            dt = get_time_from_server()
-            c = s_i2c.get()
-            print(c, dt)
+            if uart.any():
+                uart.read(1)
+                dt = get_time_from_server()
+                print(dt)
+                uart.write(dt)
     except KeyboardInterrupt:
         pass
 
-def get_time_from_server() -> None:
+def get_time_from_server() -> bytes:
     import socket
-    host = "172.30.5.91"  # Replace with the server's IP address
+    host = "192.168.1.84"  # Replace with the server's IP address
     port = 12345
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client_socket.connect((host, port))
+    server_time = b'00-00-00 00:00:00'
     try:
-        server_time = client_socket.recv(1024).decode()
+        server_time = client_socket.recv(1024)
     except Exception as e:
         print(f"Error receiving data: {e}")
     finally:
         client_socket.close()
+    return server_time
 
 def test_wifi() -> None:
     import network
@@ -76,6 +80,7 @@ def test_AHT10() -> None:
 def test_fsm_interrupt() -> None:
     """This module evaluates the correct operation of FSM objects
     """
+    uart = UART(0, baudrate=9600, tx=Pin(12), rx=Pin(13))
     i2c = I2C(0, sda=Pin(16), scl=Pin(17), freq=400000)
     oled = SSD1306_I2C(128,64,i2c)
     button = Pin(15, Pin.IN, Pin.PULL_UP)
@@ -116,12 +121,13 @@ def test_fsm_interrupt() -> None:
                 shared_obj.fsm.compute_next_state(shared_obj.ev['press button'])
         elif state == 2:
             # get time from server
-            irq_state = disable_irq()
-            i2c.writeto(0x41, b'GET')
-            print('Test i2c')
-            # oled.text(c, 0, 40)
-            shared_obj.digital_clock.clear_time()
-            enable_irq(irq_state)
+            uart.write(b'G')
+            while uart.any() == 0:
+                continue
+            dt = uart.read(19).decode()
+            time = dt.split()[1].split(':')
+            print(time)
+            shared_obj.digital_clock.set_time(int(time[0]), int(time[1]), int(time[2]))
             shared_obj.fsm.compute_next_state(shared_obj.ev['unconditional'])
         else:
             print('Are you OK, Annie?')
