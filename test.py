@@ -28,7 +28,8 @@ def time_slave() -> None:
 
 def get_time_from_server() -> bytes:
     import socket
-    host = "192.168.1.84"  # Replace with the server's IP address
+    # host = "192.168.1.84"  # Replace with the server's IP address
+    host = "172.30.5.91"  # Replace with the server's IP address
     port = 12345
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client_socket.connect((host, port))

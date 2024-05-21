@@ -12,10 +12,10 @@ if __name__ == '__main__':
         try:
             import network
         except ImportError:
-            print('Running from a Rb Pico')
+            print('Running on a Rb Pico')
             test_fsm_interrupt()
         else:
-            print('Running from a Rb Pico W')
+            print('Running on a Rb Pico W')
             time_slave()
     else:
         main()
